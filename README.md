@@ -9,7 +9,7 @@ The extension validates the entire output before it writes anything. Unknown pla
 </p>
 
 <p align="center">
-  <img src="docs/assets/readme/concepts/blueprint-anatomy.svg" width="860" alt="A File Foundry blueprint containing a manifest, templated files, nested folders, and metadata assets">
+  <img src="docs/assets/readme/concepts/blueprint-anatomy.png" width="860" alt="A File Foundry blueprint containing a manifest, templated files, nested folders, and metadata assets">
 </p>
 
 ## Start here
@@ -93,7 +93,7 @@ Use this index when you know the outcome you want but not the File Foundry term 
 The forge workflow is dependency-aware: output selection happens before prompts, only active dependencies are resolved, and the complete write plan is validated before filesystem changes begin.
 
 <p align="center">
-  <img src="docs/assets/readme/workflows/forge-flow.svg" width="860" alt="Choose a target and blueprint, select outputs, answer required prompts, validate, then forge files">
+  <img src="docs/assets/readme/workflows/forge-flow.png" width="860" alt="Choose a target and blueprint, select outputs, answer required prompts, validate, then forge files">
 </p>
 
 ## Configure the blueprint directory
@@ -886,7 +886,7 @@ The condition engine tokenizes and parses this deliberately limited grammar into
 Set `fileSelection.enabled` to show a multi-selection Quick Pick before blueprint prompts:
 
 <p align="center">
-  <img src="docs/assets/readme/workflows/output-selection.svg" width="680" alt="File Foundry selectable output checklist with component and style selected">
+  <img src="docs/assets/readme/workflows/output-selection.png" width="680" alt="File Foundry selectable output checklist with component and style selected">
 </p>
 
 ```json

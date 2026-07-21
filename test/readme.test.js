@@ -55,6 +55,18 @@ test('README contents links and organized visual assets resolve', () => {
   assert.equal((readme.match(/^```/gmu) || []).length % 2, 0, 'README code fences are unbalanced.');
 });
 
+test('README packaging has a GitHub base and Marketplace-compatible visuals', () => {
+  const packageJson = require('../package.json');
+  const readme = fs.readFileSync(readmePath, 'utf8');
+  const images = [...readme.matchAll(/<img[^>]+src="([^"]+)"/gu)].map((match) => match[1]);
+  assert.equal(packageJson.repository.url, 'https://github.com/jeffcalaway/file-foundry.git');
+  assert(!packageJson.scripts.package.includes('--no-rewrite-relative-links'));
+  assert(!packageJson.scripts.package.includes('--allow-missing-repository'));
+  for (const image of images) {
+    assert(!image.toLowerCase().endsWith('.svg'), `Marketplace README images must not embed SVG files: ${image}.`);
+  }
+});
+
 function githubSlug(value) {
   return value.toLowerCase()
     .replace(/<[^>]*>/gu, '')

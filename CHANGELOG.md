@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.0.0
+
+- Added GitHub repository, homepage, and issue-tracker metadata to the extension package.
+- Enabled `vsce` to rewrite README assets to absolute GitHub URLs.
+- Added Marketplace-compatible PNG versions of the README diagrams while retaining their SVG sources.
+
 ## 0.5.0
 
 - Added a starred, three-item Most Selected blueprint section backed by bounded workspace-local usage history.

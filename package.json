@@ -5,6 +5,14 @@
   "version": "1.0.0",
   "publisher": "calaway",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jeffcalaway/file-foundry.git"
+  },
+  "homepage": "https://github.com/jeffcalaway/file-foundry#readme",
+  "bugs": {
+    "url": "https://github.com/jeffcalaway/file-foundry/issues"
+  },
   "icon": "image.png",
   "engines": {
     "vscode": "^1.85.0"
@@ -154,7 +162,7 @@
     "build": "esbuild src/extension.js --bundle --platform=node --format=cjs --target=node18 --external:vscode --outfile=dist/extension.js --log-level=warning",
     "test:bundle": "node scripts/verifyBundle.js",
     "check": "npm run lint && npm test && npm run build && npm run test:bundle",
-    "package": "npm run build && npm run test:bundle && vsce package --no-rewrite-relative-links --allow-missing-repository"
+    "package": "npm run build && npm run test:bundle && vsce package"
   },
   "devDependencies": {
     "esbuild": "^0.25.0"
