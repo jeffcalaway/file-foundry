@@ -5,7 +5,7 @@ const path = require('path');
 const { MANIFEST_FILENAME } = require('../manifests/manifestConstants');
 
 const fsp = fs.promises;
-const IGNORED_METADATA_FILES = new Set(['.DS_Store', 'Thumbs.db', MANIFEST_FILENAME, '.file-foundry']);
+const IGNORED_METADATA_FILES = new Set(['.DS_Store', 'Thumbs.db', '.git', MANIFEST_FILENAME, '.file-foundry']);
 
 class UnsupportedSymlinkError extends Error {
   /** @param {string} relativePath */

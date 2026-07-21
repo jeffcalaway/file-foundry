@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.0.1
+
+- Ignore `.git` folder in the blueprints directory so that it doesn't get included in the blueprint options.
+
 ## 1.0.0
 
 - Added GitHub repository, homepage, and issue-tracker metadata to the extension package.

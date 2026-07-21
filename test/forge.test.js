@@ -58,6 +58,7 @@ test('discovers only immediate child directories as blueprints', async () => {
   await withFixture(async ({ blueprintRoot }) => {
     await fsp.mkdir(path.join(blueprintRoot, 'Alpha'));
     await fsp.mkdir(path.join(blueprintRoot, 'Beta'));
+    await fsp.mkdir(path.join(blueprintRoot, '.git'));
     await fsp.writeFile(path.join(blueprintRoot, 'not-a-blueprint.txt'), 'ignored');
     assert.deepEqual((await discoverBlueprints(blueprintRoot)).map((item) => item.name), ['Alpha', 'Beta']);
   });
@@ -101,6 +102,8 @@ test('plans nested names, multiple placeholders, empty directories, dotfiles, te
       "export const name = '[[FolderName>TitleCase]]';\n"
     );
     await fsp.writeFile(path.join(blueprint, '.gitignore'), 'dist/\n');
+    await fsp.mkdir(path.join(blueprint, '.git'));
+    await fsp.writeFile(path.join(blueprint, '.git', 'config'), 'ignored');
     await fsp.writeFile(path.join(blueprint, 'logo.bin'), Buffer.from([0, 1, 2, 255]));
     await fsp.writeFile(path.join(blueprint, '.DS_Store'), 'ignored');
 
