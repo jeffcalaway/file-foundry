@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "extractors": {
+    "user.scssVariables": {
+      "extends": "fileFoundry.regex",
+      "options": {
+        "pattern": "\\$(?<name>[a-zA-Z0-9-_]+):\\s*(?<value>[^;]+);",
+        "flags": "m"
+      }
+    },
+    "user.jsExports": {
+      "extends": "fileFoundry.regex",
+      "options": {
+        "pattern": "export\\s+(?:const|function|class)\\s+(?<name>[A-Za-z_$][\\w$]*)",
+        "flags": "m"
+      }
+    }
+  }
+}

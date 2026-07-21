@@ -1,0 +1,17 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "File Foundry: Build",
+      "type": "npm",
+      "script": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "File Foundry: Check",
+      "type": "npm",
+      "script": "check",
+      "problemMatcher": []
+    }
+  ]
+}

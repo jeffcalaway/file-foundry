@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "name": "Storybook Story",
+  "description": "Extract component props and choose the Storybook args to generate.",
+  "collections": {
+    "ComponentProps": {
+      "type": "extract",
+      "source": {
+        "scope": "target",
+        "path": "[[FolderName>PascalCase]].jsx"
+      },
+      "extract": {
+        "type": "fileFoundry.javascriptProps",
+        "options": {
+          "component": "defaultExport",
+          "includeRest": false
+        }
+      },
+      "onEmpty": "warn"
+    }
+  },
+  "prompts": [
+    {
+      "key": "SelectedProps",
+      "type": "selectFromCollection",
+      "collection": "ComponentProps",
+      "title": "Choose props",
+      "prompt": "Select props to add to the default story args.",
+      "selection": {
+        "mode": "multi",
+        "defaultSelected": "all"
+      },
+      "option": {
+        "label": "[[Item:name]]",
+        "description": "[[Item:defaultValue]]"
+      }
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "name": "Atomic React Component",
+  "description": "Creates a React component with an optional stylesheet.",
+  "placeholders": {
+    "ComponentName": {
+      "value": "[[FolderName>PascalCase]]"
+    },
+    "ClassBase": {
+      "value": "[[DirLetter>LowerCase]]-[[FolderName>KebabCase]]"
+    }
+  },
+  "prompts": [
+    {
+      "key": "DisplayName",
+      "type": "input",
+      "title": "Component display name",
+      "prompt": "Enter the human-readable component name.",
+      "default": "[[FolderName>TitleCase]]",
+      "required": true
+    },
+    {
+      "key": "RootElement",
+      "type": "pick",
+      "title": "Root element",
+      "prompt": "Choose the default HTML element.",
+      "options": [
+        { "label": "Div", "value": "div" },
+        { "label": "Section", "value": "section" },
+        { "label": "Article", "value": "article" }
+      ],
+      "default": "div"
+    }
+  ],
+  "fileSelection": {
+    "enabled": true,
+    "title": "Choose component files",
+    "placeholder": "Select the files to forge.",
+    "includeUnlisted": true,
+    "options": [
+      {
+        "key": "component",
+        "label": "Component",
+        "description": "Primary React component",
+        "files": [
+          "[[FolderName>PascalCase]]/[[FolderName>PascalCase]].js"
+        ],
+        "required": true,
+        "defaultSelected": true
+      },
+      {
+        "key": "styles",
+        "label": "Stylesheet",
+        "description": "Optional SCSS styles",
+        "files": [
+          "[[FolderName>PascalCase]]/[[FolderName>KebabCase]].scss"
+        ],
+        "defaultSelected": true
+      }
+    ]
+  }
+}

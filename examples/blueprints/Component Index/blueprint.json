@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "name": "Component Index",
+  "description": "Select sibling component folders and generate exports.",
+  "collections": {
+    "ComponentFolders": {
+      "type": "filesystem",
+      "source": {
+        "scope": "target",
+        "path": "."
+      },
+      "kind": "folder",
+      "recursive": false,
+      "exclude": [
+        "deprecated"
+      ],
+      "sort": {
+        "by": "name",
+        "direction": "ascending"
+      }
+    }
+  },
+  "prompts": [
+    {
+      "key": "SelectedComponents",
+      "type": "selectFromCollection",
+      "collection": "ComponentFolders",
+      "title": "Choose components",
+      "prompt": "Select component folders to export.",
+      "selection": {
+        "mode": "multi",
+        "defaultSelected": "all"
+      },
+      "option": {
+        "label": "[[Item:name>TitleCase]]",
+        "description": "[[Item:relativePath]]"
+      }
+    }
+  ]
+}

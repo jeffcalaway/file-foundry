@@ -1,0 +1,162 @@
+{
+  "name": "file-foundry",
+  "displayName": "File Foundry",
+  "description": "Create reusable file and folder blueprints, then forge them into any folder.",
+  "version": "1.0.0",
+  "publisher": "calaway",
+  "license": "MIT",
+  "icon": "image.png",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "blueprint",
+    "generator",
+    "scaffold",
+    "template",
+    "files"
+  ],
+  "activationEvents": [
+    "onCommand:fileFoundry.forgeBlueprintHere",
+    "onCommand:fileFoundry.configureBlueprintDirectory",
+    "onCommand:fileFoundry.openBlueprintDirectory",
+    "onCommand:fileFoundry.openCustomExtractorsDirectory",
+    "onCommand:fileFoundry.reloadCustomExtractors",
+    "onCommand:fileFoundry.listRegisteredExtractors",
+    "onCommand:fileFoundry.clearMostSelectedBlueprints"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "fileFoundry.forgeBlueprintHere",
+        "title": "Forge Blueprint Here",
+        "category": "File Foundry"
+      },
+      {
+        "command": "fileFoundry.configureBlueprintDirectory",
+        "title": "Configure Blueprint Directory",
+        "category": "File Foundry"
+      },
+      {
+        "command": "fileFoundry.openBlueprintDirectory",
+        "title": "Open Blueprint Directory",
+        "category": "File Foundry"
+      },
+      {
+        "command": "fileFoundry.openCustomExtractorsDirectory",
+        "title": "Open Custom Extractors Directory",
+        "category": "File Foundry"
+      },
+      {
+        "command": "fileFoundry.reloadCustomExtractors",
+        "title": "Reload Custom Extractors",
+        "category": "File Foundry"
+      },
+      {
+        "command": "fileFoundry.listRegisteredExtractors",
+        "title": "List Registered Extractors",
+        "category": "File Foundry"
+      },
+      {
+        "command": "fileFoundry.clearMostSelectedBlueprints",
+        "title": "Clear Most Selected Blueprints",
+        "category": "File Foundry"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "fileFoundry.forgeBlueprintHere",
+          "when": "explorerResourceIsFolder && resourceScheme == file",
+          "group": "1_modification@10"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "fileFoundry.forgeBlueprintHere"
+        },
+        {
+          "command": "fileFoundry.configureBlueprintDirectory"
+        },
+        {
+          "command": "fileFoundry.openBlueprintDirectory"
+        },
+        {
+          "command": "fileFoundry.openCustomExtractorsDirectory"
+        },
+        {
+          "command": "fileFoundry.reloadCustomExtractors"
+        },
+        {
+          "command": "fileFoundry.listRegisteredExtractors"
+        },
+        {
+          "command": "fileFoundry.clearMostSelectedBlueprints"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "File Foundry",
+      "properties": {
+        "fileFoundry.blueprintsDirectory": {
+          "type": "string",
+          "default": "",
+          "scope": "resource",
+          "format": "directory",
+          "markdownDescription": "Path to the directory whose immediate child folders are File Foundry blueprints. Supports absolute paths, `~`, and workspace-relative paths. [Browse…](command:fileFoundry.configureBlueprintDirectory)"
+        },
+        "fileFoundry.extractorsFile": {
+          "type": "string",
+          "default": "",
+          "scope": "resource",
+          "format": "file",
+          "markdownDescription": "Optional path to a version 1 JSON file containing declarative extractor presets. Supports absolute paths, `~`, and workspace-relative paths."
+        },
+        "fileFoundry.customExtractorsDirectory": {
+          "type": "string",
+          "default": "",
+          "scope": "resource",
+          "format": "directory",
+          "markdownDescription": "Optional path to a trusted directory containing CommonJS `.js` or `.cjs` extractor modules. These modules execute with the extension host's permissions. [Open directory…](command:fileFoundry.openCustomExtractorsDirectory)"
+        },
+        "fileFoundry.mostSelectedBlueprints": {
+          "type": "boolean",
+          "default": true,
+          "scope": "resource",
+          "markdownDescription": "Show up to three frequently selected blueprints in a starred **Most Selected** section. Stored only in lightweight workspace state. Disable globally in User Settings or override it per workspace."
+        }
+      }
+    }
+  },
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": "limited",
+      "description": "Built-in extractors and declarative presets remain available, but custom JavaScript extractors and symlink traversal are disabled.",
+      "restrictedConfigurations": [
+        "fileFoundry.customExtractorsDirectory"
+      ]
+    },
+    "virtualWorkspaces": {
+      "supported": false
+    }
+  },
+  "dependencies": {
+    "@babel/parser": "^7.28.5",
+    "minimatch": "^5.1.6"
+  },
+  "scripts": {
+    "test": "node test/run.js",
+    "lint": "node scripts/lint.js",
+    "build": "esbuild src/extension.js --bundle --platform=node --format=cjs --target=node18 --external:vscode --outfile=dist/extension.js --log-level=warning",
+    "test:bundle": "node scripts/verifyBundle.js",
+    "check": "npm run lint && npm test && npm run build && npm run test:bundle",
+    "package": "npm run build && npm run test:bundle && vsce package --no-rewrite-relative-links --allow-missing-repository"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0"
+  }
+}
