@@ -354,6 +354,10 @@ function withoutExistingSources(sources, existingPaths) {
 async function selectTargetDirectory(vscode, resource) {
   let targetUri = resource;
 
+  if (!targetUri && vscode.window.activeTextEditor) {
+    targetUri = vscode.Uri.file(path.dirname(vscode.window.activeTextEditor.document.uri.fsPath));
+  }
+
   if (!targetUri) {
     const selections = await vscode.window.showOpenDialog({
       title: 'Select the folder where the blueprint should be forged',

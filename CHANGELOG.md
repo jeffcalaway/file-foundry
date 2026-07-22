@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.0.2
+
+- When running the `forgeBlueprintHere` command, use active editor path as fallback target directory.
+
 ## 1.0.1
 
 - Ignore `.git` folder in the blueprints directory so that it doesn't get included in the blueprint options.
