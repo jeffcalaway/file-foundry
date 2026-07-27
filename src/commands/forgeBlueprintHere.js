@@ -197,7 +197,11 @@ function createForgeBlueprintHereCommand(vscode, outputChannel, extractorService
         selectedSources,
         targetDirectory: targetUri.fsPath,
         workspaceDirectories: workspacePaths,
-        builtInContext
+        builtInContext: inputs ? {
+          ...builtInContext,
+          Custom: inputs.custom,
+          Prompt: inputs.prompts
+        } : builtInContext
       });
       if (routedOutputs === undefined) {
         log(outputChannel, 'Forge canceled during output destination selection before writing files.');

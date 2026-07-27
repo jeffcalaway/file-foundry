@@ -16,6 +16,10 @@ async function resolveOutputRoutes(options) {
 
   for (const route of options.manifest.outputRoutes) {
     if (!activeKeys.has(route.option)) continue;
+    if (route.type === 'parentDirectory') {
+      applyParentDirectoryRoute(route, options, selected, overrides);
+      continue;
+    }
     const legacySource = normalizeSourcePath(route.legacySource);
     const modernSource = normalizeSourcePath(route.modernSource);
     if (!selected.has(legacySource) || !selected.has(modernSource)) {
@@ -83,6 +87,26 @@ async function resolveOutputRoutes(options) {
   }
 
   return { selectedSources: [...selected.values()], destinationOverrides: overrides };
+}
+
+function applyParentDirectoryRoute(route, options, selected, overrides) {
+  const source = normalizeSourcePath(route.source);
+  if (!selected.has(source)) {
+    throw new Error(`Output route source is not selected for option ${route.option}.`);
+  }
+  const destinationDirectory = path.dirname(path.resolve(options.targetDirectory));
+  if (!options.workspaceDirectories.some((workspace) => isInside(workspace, destinationDirectory))) {
+    throw new Error(`Parent-directory output route for option ${route.option} would write outside the workspace.`);
+  }
+  const filename = replacePlaceholders(
+    path.basename(route.source),
+    options.builtInContext,
+    `blueprint.json output route ${route.source}`
+  );
+  overrides.set(source, {
+    destinationPath: path.join(destinationDirectory, filename),
+    rootDirectory: destinationDirectory
+  });
 }
 
 async function resolveUsefulGroupTemplateBlockDirectory({ targetDirectory, workspaceDirectories }) {

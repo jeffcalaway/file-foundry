@@ -3,6 +3,20 @@
 const { applyTransform } = require('./transforms');
 const { LocatedPlaceholderError, scanPlaceholders } = require('./scanPlaceholders');
 
+class MissingPlaceholderValueError extends LocatedPlaceholderError {
+  /** @param {{namespace: string, key: string, placeholder: string, expression: string}} parsed @param {string} sourceRelativePath */
+  constructor(parsed, sourceRelativePath) {
+    super(
+      `No value is available for ${parsed.placeholder}.`,
+      sourceRelativePath,
+      parsed.expression
+    );
+    this.name = 'MissingPlaceholderValueError';
+    this.namespace = parsed.namespace;
+    this.key = parsed.key;
+  }
+}
+
 /**
  * Replace complete double-bracket expressions while leaving ordinary brackets
  * and unrelated syntax (including JavaScript template expressions) untouched.
@@ -26,11 +40,7 @@ function replacePlaceholders(input, context, sourceRelativePath = '<value>', val
         ? valueResolver(parsed)
         : resolveContextValue(context, parsed);
       if (typeof baseValue !== 'string') {
-        throw new LocatedPlaceholderError(
-          `No value is available for ${parsed.placeholder}.`,
-          sourceRelativePath,
-          parsed.expression
-        );
+        throw new MissingPlaceholderValueError(parsed, sourceRelativePath);
       }
       result += parsed.transform
         ? applyTransform(parsed.transform, baseValue)
@@ -69,4 +79,15 @@ function scalarToString(value) {
   return ['string', 'number', 'boolean'].includes(typeof value) ? String(value) : undefined;
 }
 
-module.exports = { LocatedPlaceholderError, replacePlaceholders };
+/** @param {unknown} error */
+function isDeferredPlaceholderValueError(error) {
+  return error instanceof MissingPlaceholderValueError &&
+    (error.namespace === 'Prompt' || error.namespace === 'Custom');
+}
+
+module.exports = {
+  LocatedPlaceholderError,
+  MissingPlaceholderValueError,
+  isDeferredPlaceholderValueError,
+  replacePlaceholders
+};

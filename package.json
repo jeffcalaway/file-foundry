@@ -2,7 +2,7 @@
   "name": "file-foundry",
   "displayName": "File Foundry",
   "description": "Create reusable file and folder blueprints, then forge them into any folder.",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "publisher": "jeffcalaway",
   "license": "MIT",
   "repository": {

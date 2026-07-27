@@ -24,11 +24,14 @@ async function buildUsefulGroupPhpRegistryUpdates({ vscode, manifest, context, p
     }
     const moduleDirectory = applyTransform('KebabCase', moduleName);
     const expectedOutputs = [];
-    if (includeModule) expectedOutputs.push(path.join(plan.targetDirectory, `class-${moduleDirectory}.php`));
-    if (includeFunctions) expectedOutputs.push(path.join(plan.targetDirectory, moduleDirectory, 'functions.php'));
-    if (expectedOutputs.some((expected) => !plan.files.some((file) => file.destinationPath === expected))) {
-      throw new Error('Workspace edit could not find its selected WordPress package output in the forge plan.');
-    }
+    const parentOutput = includeModule
+      ? findSelectedOutput(manifest, definition.parentModuleOption, plan, `class-${moduleDirectory}.php`)
+      : undefined;
+    const functionsOutput = includeFunctions
+      ? findSelectedOutput(manifest, definition.functionsOption, plan, 'functions.php')
+      : undefined;
+    if (parentOutput) expectedOutputs.push(parentOutput);
+    if (functionsOutput) expectedOutputs.push(functionsOutput);
 
     const candidate = candidates
       .map((functionsPath) => ({ functionsPath, root: path.dirname(functionsPath) }))
@@ -42,7 +45,6 @@ async function buildUsefulGroupPhpRegistryUpdates({ vscode, manifest, context, p
     const className = applyTransform('PascalCase', moduleName);
     if (includeModule) contents = addModuleRegistration(contents, variableName, className);
     if (includeFunctions) {
-      const functionsOutput = path.join(plan.targetDirectory, moduleDirectory, 'functions.php');
       const relativeFunctionsPath = path.relative(candidate.root, functionsOutput).split(path.sep).join('/');
       contents = addFunctionsDependency(contents, relativeFunctionsPath);
     }
@@ -56,6 +58,23 @@ async function buildUsefulGroupPhpRegistryUpdates({ vscode, manifest, context, p
     }
   }
   return mergeUpdates(updates);
+}
+
+function findSelectedOutput(manifest, optionKey, plan, expectedBasename) {
+  const option = manifest.fileSelection?.options.find((item) => item.key === optionKey);
+  const literalSources = new Set((option?.files || [])
+    .filter((source) => typeof source === 'string')
+    .map((source) => source.replace(/\\/gu, '/')));
+  const matches = plan.files.filter((file) =>
+    literalSources.has(file.sourceRelativePath.replace(/\\/gu, '/')) &&
+    path.basename(file.destinationPath) === expectedBasename
+  );
+  if (matches.length !== 1) {
+    throw new Error(
+      `Workspace edit could not find the selected ${JSON.stringify(optionKey)} WordPress package output in the forge plan.`
+    );
+  }
+  return matches[0].destinationPath;
 }
 
 /** Find real useful-group/functions.php files visible in the current workspace. */

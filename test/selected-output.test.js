@@ -7,6 +7,7 @@ const path = require('path');
 const { test } = require('./harness');
 const { walkDirectory } = require('../src/filesystem/walkDirectory');
 const { buildForgePlan } = require('../src/forge/buildForgePlan');
+const { buildVirtualOutputFiles } = require('../src/forge/buildVirtualOutputFiles');
 const { inspectSelectedSources } = require('../src/forge/inspectSelectedSources');
 const { loadBlueprintManifest } = require('../src/manifests/loadBlueprintManifest');
 const { createContext } = require('../src/placeholders/createContext');
@@ -79,6 +80,21 @@ test('destination collisions are detected after prompt values resolve', async ()
       }
     }), /same destination/u);
   });
+});
+
+test('virtual outputs defer prompt placeholders in destination paths', () => {
+  const source = {
+    type: 'file',
+    relativePath: '[[Prompt:ModuleName>KebabCase]]/class-setup.php',
+    sourceBuffer: Buffer.from('<?php')
+  };
+  const files = buildVirtualOutputFiles(
+    [source],
+    path.join(path.sep, 'useful-group', 'includes', 'tests'),
+    { FolderName: 'tests', FolderLetter: 't', DirName: 'includes', DirLetter: 'i' }
+  );
+
+  assert.equal(files.size, 0);
 });
 
 test('a manifest-free blueprint retains the legacy forge plan', async () => {

@@ -105,6 +105,33 @@ test('validates WordPress template-block output routes', () => {
   }, 'WordPress Component'), /undefined file-selection option/u);
 });
 
+test('validates parent-directory output routes', () => {
+  const manifest = {
+    version: 1,
+    fileSelection: {
+      enabled: true,
+      options: [{
+        key: 'parentModule', label: 'Parent Module',
+        files: ['class-[[Prompt:ModuleName>KebabCase]].php']
+      }]
+    },
+    prompts: [{ key: 'ModuleName', type: 'input' }],
+    outputRoutes: [{
+      type: 'parentDirectory',
+      source: 'class-[[Prompt:ModuleName>KebabCase]].php'
+    }]
+  };
+  assert.doesNotThrow(() => validateBlueprintManifest(manifest, 'WordPress Package'));
+  assert.throws(() => validateBlueprintManifest({
+    ...manifest,
+    outputRoutes: [{ type: 'parentDirectory', source: '../class-module.php' }]
+  }, 'WordPress Package'), /safe non-empty blueprint-relative path/u);
+  assert.throws(() => validateBlueprintManifest({
+    ...manifest,
+    outputRoutes: [{ type: 'parentDirectory', source: 'unselected.php' }]
+  }, 'WordPress Package'), /literal file in option/u);
+});
+
 test('validates collection initial records and missing-source behavior', () => {
   assert.doesNotThrow(() => validateBlueprintManifest({
     version: 1,

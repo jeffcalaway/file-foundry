@@ -83,18 +83,29 @@ test('builds and executes a guarded useful-group workspace update', async () => 
   const root = await fsp.mkdtemp(path.join(os.tmpdir(), 'file-foundry-useful-group-'));
   try {
     const usefulGroup = path.join(root, 'useful-group');
-    const target = path.join(usefulGroup, 'includes');
-    await fsp.mkdir(path.join(target, 'book-items'), { recursive: true });
+    const includes = path.join(usefulGroup, 'includes');
+    const target = path.join(includes, 'book-items');
+    await fsp.mkdir(target, { recursive: true });
     const functionsPath = path.join(usefulGroup, 'functions.php');
     await fsp.writeFile(functionsPath, usefulGroupSource);
-    const parentOutput = path.join(target, 'class-book-items.php');
-    const functionsOutput = path.join(target, 'book-items', 'functions.php');
+    const parentOutput = path.join(includes, 'class-book-items.php');
+    const functionsOutput = path.join(target, 'functions.php');
     const plan = {
       targetDirectory: target,
       directories: [],
       files: [
-        { destinationPath: parentOutput, exists: false, contents: Buffer.from('parent') },
-        { destinationPath: functionsOutput, exists: false, contents: Buffer.from('functions') }
+        {
+          sourceRelativePath: 'class-[[Prompt:ModuleName>KebabCase]].php',
+          destinationPath: parentOutput,
+          exists: false,
+          contents: Buffer.from('parent')
+        },
+        {
+          sourceRelativePath: 'functions.php',
+          destinationPath: functionsOutput,
+          exists: false,
+          contents: Buffer.from('functions')
+        }
       ]
     };
     const updates = await buildUsefulGroupPhpRegistryUpdates({
@@ -103,7 +114,11 @@ test('builds and executes a guarded useful-group workspace update', async () => 
         workspaceEdits: [{
           type: 'usefulGroupPhpRegistry', moduleNamePrompt: 'ModuleName',
           parentModuleOption: 'parentModule', functionsOption: 'functions'
-        }]
+        }],
+        fileSelection: { options: [
+          { key: 'parentModule', files: ['class-[[Prompt:ModuleName>KebabCase]].php'] },
+          { key: 'functions', files: ['functions.php'] }
+        ] }
       },
       context: {
         Prompt: { ModuleName: 'Book Items' },

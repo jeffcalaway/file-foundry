@@ -163,6 +163,25 @@ test('clears every initial selection when any preselected option file already ex
   }
 });
 
+test('defers prompt and custom path placeholders during preselection checks', async () => {
+  const selection = configuredSelection([
+    { ...option('setup', ['[[Prompt:ModuleName>KebabCase]]/class-setup.php']), defaultSelected: true },
+    { ...option('helper', ['[[Custom:HelperName]].php']), defaultSelected: true }
+  ], false);
+  const localEntries = [
+    entry('[[Prompt:ModuleName>KebabCase]]/class-setup.php', 'file'),
+    entry('[[Custom:HelperName]].php', 'file')
+  ];
+
+  assert.equal(await hasExistingPreselectedFiles({
+    fileSelection: selection,
+    optionMatches: matchSelectionEntries(selection, localEntries),
+    sourceEntries: localEntries,
+    targetDirectory: path.join(os.tmpdir(), 'file-foundry-unresolved-selection'),
+    builtInContext: { FolderName: 'tests', FolderLetter: 't', DirName: 'includes', DirLetter: 'i' }
+  }), false);
+});
+
 /** @param {string} relativePath @param {string} type */
 function entry(relativePath, type) {
   return { relativePath, sourcePath: `/blueprint/${relativePath}`, type };

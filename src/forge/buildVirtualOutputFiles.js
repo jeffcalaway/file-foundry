@@ -1,7 +1,10 @@
 'use strict';
 
 const path = require('path');
-const { replacePlaceholders } = require('../placeholders/replacePlaceholders');
+const {
+  isDeferredPlaceholderValueError,
+  replacePlaceholders
+} = require('../placeholders/replacePlaceholders');
 
 /** Map selected in-memory blueprint files to their prospective target paths. */
 function buildVirtualOutputFiles(inspectedSources, targetDirectory, builtInContext) {
@@ -16,7 +19,7 @@ function buildVirtualOutputFiles(inspectedSources, targetDirectory, builtInConte
       );
       files.set(path.resolve(targetDirectory, relativePath), source.sourceBuffer);
     } catch (error) {
-      if (!/Missing value for Prompt:|Missing value for Custom:/u.test(error.message)) throw error;
+      if (!isDeferredPlaceholderValueError(error)) throw error;
     }
   }
   return files;

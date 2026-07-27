@@ -2,7 +2,10 @@
 
 const fs = require('fs');
 const { normalizeDestination } = require('../filesystem/normalizeDestination');
-const { replacePlaceholders } = require('../placeholders/replacePlaceholders');
+const {
+  isDeferredPlaceholderValueError,
+  replacePlaceholders
+} = require('../placeholders/replacePlaceholders');
 const { normalizeSourcePath } = require('./matchSelectionEntries');
 
 const fsp = fs.promises;
@@ -58,7 +61,7 @@ async function findExistingSourcePaths({
         destinationPath = normalizeDestination(targetDirectory, outputSegments, source.relativePath);
       }
     } catch (error) {
-      if (/Missing value for (?:Prompt|Custom):/u.test(error.message)) continue;
+      if (isDeferredPlaceholderValueError(error)) continue;
       throw error;
     }
     const stats = await lstatIfExists(destinationPath);

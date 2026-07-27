@@ -1,5 +1,12 @@
 # Change Log
 
+## 1.0.3
+
+- Fixed forging blueprints whose selected output paths contain prompt or custom placeholders by deferring preflight path checks until those values are available.
+- Replaced fragile placeholder error-message matching with structured missing-value errors.
+- Added regression coverage for prompt-derived WordPress package paths such as `[[Prompt:ModuleName>KebabCase]]/class-setup.php`.
+- Added parent-directory output routing so package contents can be forged directly into the selected module folder while a parent module file is generated beside it.
+
 ## 1.0.2
 
 - When running the `forgeBlueprintHere` command, use active editor path as fallback target directory.

@@ -41,6 +41,24 @@ test('resolves prompts for earlier selected file groups before an active output 
   );
 });
 
+test('includes a parent-directory route source in early prompt resolution', () => {
+  const parent = { type: 'file', relativePath: 'class-[[Prompt:ModuleName>KebabCase]].php' };
+  const manifest = {
+    fileSelection: { options: [{ key: 'parentModule' }] },
+    outputRoutes: [{
+      type: 'parentDirectory',
+      option: 'parentModule',
+      source: parent.relativePath
+    }]
+  };
+  const matches = new Map([['parentModule', new Set([parent.relativePath])]]);
+
+  assert.deepStrictEqual(
+    preRouteSources(manifest, ['parentModule'], [parent], matches),
+    [parent]
+  );
+});
+
 function selectedSources(root) {
   return [
     { type: 'file', relativePath: '[[FolderName]].php', sourcePath: path.join(root, 'part.php') },
@@ -97,6 +115,36 @@ test('routes modern template blocks to a component-local .block.php file', async
     assert.equal(
       result.destinationOverrides.get('_page-builder/[[FolderName]].block.php').destinationPath,
       path.join(target, 'test.block.php')
+    );
+  } finally { await fsp.rm(root, { recursive: true, force: true }); }
+});
+
+test('routes a prompted parent module to the clicked folder parent', async () => {
+  const root = await fsp.mkdtemp(path.join(os.tmpdir(), 'file-foundry-parent-route-'));
+  try {
+    const target = path.join(root, 'useful-group', 'includes', 'tests');
+    await fsp.mkdir(target, { recursive: true });
+    const source = {
+      type: 'file',
+      relativePath: 'class-[[Prompt:ModuleName>KebabCase]].php'
+    };
+    const result = await resolveOutputRoutes({
+      vscode: { window: {} },
+      manifest: { outputRoutes: [{
+        type: 'parentDirectory',
+        option: 'parentModule',
+        source: source.relativePath
+      }] },
+      selectedOutputKeys: ['parentModule'],
+      selectedSources: [source],
+      targetDirectory: target,
+      workspaceDirectories: [root],
+      builtInContext: { Prompt: { ModuleName: 'Tests' } }
+    });
+
+    assert.equal(
+      result.destinationOverrides.get(source.relativePath).destinationPath,
+      path.join(root, 'useful-group', 'includes', 'class-tests.php')
     );
   } finally { await fsp.rm(root, { recursive: true, force: true }); }
 });

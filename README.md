@@ -998,6 +998,22 @@ The WordPress component blueprint uses an output route for its Template Block op
 
 When that option is selected, File Foundry asks between the legacy Template Blocks Folder destination and the modern Component Folder destination. The legacy route searches the containing `useful-group/template-blocks` tree for a real folder named `page-builder`; a missing `template-blocks` or `page-builder` directory produces a warning and skips only that routed file. The modern route writes `[[FolderName]].block.php` directly in the forge target. Route metadata directories are never generated in the target.
 
+A `parentDirectory` route writes one selected source file into the forge target’s parent directory without asking another destination question:
+
+```json
+{
+  "outputRoutes": [
+    {
+      "type": "parentDirectory",
+      "option": "parentModule",
+      "source": "class-[[Prompt:ModuleName>KebabCase]].php"
+    }
+  ]
+}
+```
+
+This is useful when a package is forged directly inside its existing module folder while its parent module file belongs beside that folder. The source must be a literal file owned by the referenced file-selection option, and the destination parent must remain inside the workspace. The `option` defaults to `parentModule`.
+
 ## Complete manifest example
 
 ```json

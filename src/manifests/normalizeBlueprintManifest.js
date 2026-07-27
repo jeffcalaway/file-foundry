@@ -72,7 +72,7 @@ function normalizeBlueprintManifest(manifest, directoryName) {
   }));
   const outputRoutes = (manifest.outputRoutes || []).map((route) => ({
     ...route,
-    option: route.option ?? 'templateBlock'
+    option: route.option ?? (route.type === 'parentDirectory' ? 'parentModule' : 'templateBlock')
   }));
 
   return {

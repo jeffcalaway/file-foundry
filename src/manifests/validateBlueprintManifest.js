@@ -84,15 +84,18 @@ function validateOutputRoutes(routes, fileSelection, blueprintName) {
   const routedSources = new Set();
   for (const [index, route] of routes.entries()) {
     const location = `outputRoutes[${index}]`;
-    if (!isObject(route) || route.type !== 'wordpressTemplateBlock') {
-      throw manifestError(blueprintName, `${location}.type must be wordpressTemplateBlock.`);
+    if (!isObject(route) || !['parentDirectory', 'wordpressTemplateBlock'].includes(route.type)) {
+      throw manifestError(blueprintName, `${location}.type must be parentDirectory or wordpressTemplateBlock.`);
     }
-    const option = route.option ?? 'templateBlock';
+    const option = route.option ?? (route.type === 'parentDirectory' ? 'parentModule' : 'templateBlock');
     identifier(option, `${location}.option`, blueprintName);
     if (!options[option]) {
       throw manifestError(blueprintName, `${location}.option references undefined file-selection option ${JSON.stringify(option)}.`);
     }
-    for (const property of ['legacySource', 'modernSource']) {
+    const sourceProperties = route.type === 'parentDirectory'
+      ? ['source']
+      : ['legacySource', 'modernSource'];
+    for (const property of sourceProperties) {
       const source = route[property];
       if (typeof source !== 'string' || !source || pathIsUnsafe(source)) {
         throw manifestError(blueprintName, `${location}.${property} must be a safe non-empty blueprint-relative path.`);
