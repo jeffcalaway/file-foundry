@@ -81,6 +81,7 @@ function normalizeBlueprintManifest(manifest, directoryName) {
       ? manifest.name.trim()
       : directoryName,
     description: manifest.description || undefined,
+    openFile: manifest.openFile || undefined,
     omitEmptyFiles: manifest.omitEmptyFiles ?? false,
     collections,
     placeholders: manifest.placeholders || {},

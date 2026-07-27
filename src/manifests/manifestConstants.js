@@ -12,6 +12,7 @@ const TOP_LEVEL_PROPERTIES = Object.freeze([
   'version',
   'name',
   'description',
+  'openFile',
   'omitEmptyFiles',
   'collections',
   'placeholders',

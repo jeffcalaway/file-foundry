@@ -25,7 +25,7 @@ test('formats forge picker targets using only the parent and folder names', () =
   assert.equal(formatForgeTarget(path.parse(process.cwd()).root), '/');
 });
 
-test('opens the generated file only when exactly one new file was created', async () => {
+test('opens the only generated file regardless of the manifest preference', async () => {
   const calls = [];
   const vscode = {
     Uri: { file: (filePath) => ({ scheme: 'file', fsPath: filePath }) },
@@ -38,19 +38,42 @@ test('opens the generated file only when exactly one new file was created', asyn
     ]
   };
 
-  assert.equal(await openSingleCreatedFile(vscode, plan, { filesCreated: 1 }), true);
+  assert.equal(await openSingleCreatedFile(
+    vscode,
+    plan,
+    { filesCreated: 1 },
+    { openFile: 'other.js' }
+  ), true);
   assert.deepEqual(calls, [['vscode.open', { scheme: 'file', fsPath: '/target/created.js' }]]);
 
   calls.length = 0;
-  assert.equal(await openSingleCreatedFile(vscode, plan, { filesCreated: 0 }), false);
+  assert.equal(await openSingleCreatedFile(vscode, plan, { filesCreated: 0 }, { openFile: 'created.js' }), false);
   assert.deepEqual(calls, []);
+});
 
-  assert.equal(await openSingleCreatedFile(vscode, {
+test('opens the manifest-preferred output when multiple files are created', async () => {
+  const calls = [];
+  const vscode = {
+    Uri: { file: (filePath) => ({ scheme: 'file', fsPath: filePath }) },
+    commands: { executeCommand: async (...args) => calls.push(args) }
+  };
+  const plan = {
     files: [
-      { destinationPath: '/target/one.js', exists: false },
-      { destinationPath: '/target/two.js', exists: false }
+      { sourceRelativePath: 'one.js', destinationPath: '/target/one.js', exists: false },
+      { sourceRelativePath: 'nested/preferred.js', destinationPath: '/routed/preferred.js', exists: false }
     ]
-  }, { filesCreated: 2 }), false);
+  };
+
+  assert.equal(await openSingleCreatedFile(
+    vscode,
+    plan,
+    { filesCreated: 2 },
+    { openFile: 'nested\\preferred.js' }
+  ), true);
+  assert.deepEqual(calls, [['vscode.open', { scheme: 'file', fsPath: '/routed/preferred.js' }]]);
+
+  calls.length = 0;
+  assert.equal(await openSingleCreatedFile(vscode, plan, { filesCreated: 2 }, {}), false);
   assert.deepEqual(calls, []);
 });
 

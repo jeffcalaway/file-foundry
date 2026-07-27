@@ -26,11 +26,13 @@ test('loads and normalizes valid version 1 metadata', async () => {
       version: 1,
       name: 'Atomic Component',
       description: 'Selectable component files.',
+      openFile: '[[FolderName]].js',
       omitEmptyFiles: true
     });
     const loaded = await loadBlueprintManifest(blueprint);
     assert.equal(loaded.manifest.name, 'Atomic Component');
     assert.equal(loaded.manifest.description, 'Selectable component files.');
+    assert.equal(loaded.manifest.openFile, '[[FolderName]].js');
     assert.equal(loaded.manifest.omitEmptyFiles, true);
     assert.deepEqual(loaded.manifest.prompts, []);
     assert.equal(loaded.manifest.fileSelection.enabled, false);
@@ -41,6 +43,23 @@ test('validates omitEmptyFiles as a boolean', () => {
   assert.throws(
     () => validateBlueprintManifest({ version: 1, omitEmptyFiles: 'yes' }, 'Invalid'),
     /omitEmptyFiles.*boolean/u
+  );
+});
+
+test('validates the preferred file to open after forging', () => {
+  assert.doesNotThrow(() => validateBlueprintManifest({
+    version: 1,
+    openFile: 'nested/[[FolderName]].js'
+  }, 'Valid'));
+  for (const openFile of ['', '../outside.js', '/absolute.js', 'folder/']) {
+    assert.throws(
+      () => validateBlueprintManifest({ version: 1, openFile }, 'Invalid'),
+      /openFile.*safe non-empty blueprint-relative file path/u
+    );
+  }
+  assert.throws(
+    () => validateBlueprintManifest({ version: 1, openFile: true }, 'Invalid'),
+    /openFile.*safe non-empty blueprint-relative file path/u
   );
 });
 

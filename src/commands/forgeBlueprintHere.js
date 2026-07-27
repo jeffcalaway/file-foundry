@@ -293,7 +293,7 @@ function createForgeBlueprintHereCommand(vscode, outputChannel, extractorService
         })
       );
 
-      await openSingleCreatedFile(vscode, plan, result);
+      await openSingleCreatedFile(vscode, plan, result, manifest);
 
       const summary = formatSuccessSummary(
         manifest.name,
@@ -337,13 +337,25 @@ function blueprintPickerItem(blueprint, starred) {
   };
 }
 
-/** Open the only newly created output in its normal VS Code editor. */
-async function openSingleCreatedFile(vscode, plan, result) {
-  if (result.filesCreated !== 1) return false;
+/** Open a newly created output using single-file precedence and the manifest preference. */
+async function openSingleCreatedFile(vscode, plan, result, manifest) {
   const createdFiles = plan.files.filter((file) => !file.exists);
-  if (createdFiles.length !== 1) return false;
-  await vscode.commands.executeCommand('vscode.open', vscode.Uri.file(createdFiles[0].destinationPath));
+  let file;
+  if (result.filesCreated === 1 && createdFiles.length === 1) {
+    [file] = createdFiles;
+  } else if (result.filesCreated > 1 && manifest?.openFile) {
+    const preferredSource = normalizeBlueprintSourcePath(manifest.openFile);
+    file = createdFiles.find((candidate) =>
+      normalizeBlueprintSourcePath(candidate.sourceRelativePath) === preferredSource
+    );
+  }
+  if (!file) return false;
+  await vscode.commands.executeCommand('vscode.open', vscode.Uri.file(file.destinationPath));
   return true;
+}
+
+function normalizeBlueprintSourcePath(sourcePath) {
+  return path.posix.normalize(sourcePath.replace(/\\/gu, '/')).replace(/^\.\//u, '');
 }
 
 function withoutExistingSources(sources, existingPaths) {

@@ -172,6 +172,7 @@ A blueprint may contain an optional `blueprint.json`. Manifests use strict JSONâ
   "version": 1,
   "name": "Atomic React Component",
   "description": "Creates a component with selectable supporting files.",
+  "openFile": "[[FolderName]].js",
   "omitEmptyFiles": false,
   "placeholders": {},
   "collections": {},
@@ -188,6 +189,7 @@ A blueprint may contain an optional `blueprint.json`. Manifests use strict JSONâ
 | `version` | Yes | Manifest schema version; currently `1`. |
 | `name` | No | Blueprint-picker title; defaults to the blueprint directory name. |
 | `description` | No | Concise supporting text in the blueprint picker. |
+| `openFile` | No | Blueprint-relative source file to open when a forge creates multiple files. |
 | `omitEmptyFiles` | No | Omits UTF-8 files that render to zero bytes; defaults to `false`. |
 | `placeholders` | No | Named derived values composed from context and prompt placeholders. |
 | `collections` | No | Filesystem discoveries or records extracted from a text source. |
@@ -1097,7 +1099,7 @@ const [[Custom:ComponentName]] = ({
 
 The forge command is also available from the Command Palette. When it is run there, File Foundry opens a folder picker for the target.
 
-After a successful forge, File Foundry opens the generated file when exactly one new file was created. Multi-file results stay focused on the current editor. The result notification reports created folders and files plus any skipped files, and its **Reveal Target Folder** action selects the target in the Explorer. Detailed activity is available in the **File Foundry** output channel.
+After a successful forge, File Foundry always opens the generated file when exactly one new file was created. When multiple files were created, it opens the newly created output whose blueprint-relative source path matches the manifest's `openFile` value. If that source was not selected or was skipped because it already existed, the current editor stays focused. The result notification reports created folders and files plus any skipped files, and its **Reveal Target Folder** action selects the target in the Explorer. Detailed activity is available in the **File Foundry** output channel.
 
 ## Built-in placeholders
 

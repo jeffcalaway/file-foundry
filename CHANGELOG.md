@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.0.4
+
+- Added the manifest `openFile` preference for choosing which newly created output opens after a multi-file forge, while preserving automatic opening for single-file results.
+
 ## 1.0.3
 
 - Fixed forging blueprints whose selected output paths contain prompt or custom placeholders by deferring preflight path checks until those values are available.

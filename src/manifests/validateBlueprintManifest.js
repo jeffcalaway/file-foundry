@@ -37,6 +37,7 @@ function validateBlueprintManifest(manifestValue, blueprintName) {
 
   optionalString(manifest, 'name', blueprintName);
   optionalString(manifest, 'description', blueprintName);
+  validateOpenFile(manifest.openFile, blueprintName);
   optionalBoolean(manifest, 'omitEmptyFiles', blueprintName);
 
   const placeholders = manifest.placeholders ?? {};
@@ -75,6 +76,14 @@ function validateBlueprintManifest(manifestValue, blueprintName) {
   validateWorkspaceEdits(manifest.workspaceEdits, prompts, manifest.fileSelection, blueprintName);
   validateOutputRoutes(manifest.outputRoutes, manifest.fileSelection, blueprintName);
   return { warnings };
+}
+
+function validateOpenFile(openFile, blueprintName) {
+  if (openFile === undefined) return;
+  if (typeof openFile !== 'string' || !openFile.trim() || pathIsUnsafe(openFile) ||
+      openFile.replace(/\\/gu, '/').endsWith('/')) {
+    throw manifestError(blueprintName, '"openFile" must be a safe non-empty blueprint-relative file path.');
+  }
 }
 
 function validateOutputRoutes(routes, fileSelection, blueprintName) {
